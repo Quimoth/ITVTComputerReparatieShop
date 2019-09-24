@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ComputerReparatieShop.Models
 {
-    class CustomerModel : UserModel
+    public class CustomerModel : UserModel
     {
         [Key]
         public int CustomerId { get; set; }

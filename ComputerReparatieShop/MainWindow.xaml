@@ -29,18 +29,17 @@
             </Style.Triggers>
         </Style>
         
-        <Style x:Key="StartDateStyle" TargetType="TextBlock">
+        <Style x:Key="StartDateStyle" TargetType="DatePicker">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=StartDate, Converter={StaticResource IsEqualOrGreaterThanConverter}, ConverterParameter=3}" Value="True">
-                    <Setter Property="Background" Value="Yellow" />
+                    <Setter Property="Background" Value="NavajoWhite" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         
-        <Style x:Key="EndDateStyle" TargetType="TextBlock">
+        <Style x:Key="EndDateStyle" TargetType="DatePicker">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=EndDate, Converter={StaticResource IsEqualOrGreaterThanConverter}, ConverterParameter=3}" Value="True">
-                    <Setter Property="Background" Value="LightCoral"/>
                     <Setter Property="Foreground" Value="Red"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -48,18 +47,16 @@
         <!--#endregion-->
         
         <!--#region DataTemplates -->
-        
         <DataTemplate x:Name="StatusTemplate" x:Key="StatusTemplate">
             <TextBlock Text="{Binding Path=Status}" Style="{StaticResource StatusBlockStyle}"/>
         </DataTemplate>
-        
-        <DataTemplate x:Name="StartDateTemplate" x:Key="StartDateTemplate">
-            <TextBlock Text="{Binding Path=StartDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource StartDateStyle}"></TextBlock>
 
+        <DataTemplate x:Name="StartDateTemplate" x:Key="StartDateTemplate">
+            <DatePicker Name="StartDatePicker" Text="{Binding Path=StartDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource StartDateStyle}" SelectedDateChanged="UpdateDate" CalendarOpened="DatePicker_Open"></DatePicker>
         </DataTemplate>
-        
+
         <DataTemplate x:Name="EndDateTemplate" x:Key="EndDateTemplate">
-            <TextBlock Text="{Binding Path=EndDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource EndDateStyle}"></TextBlock>
+            <DatePicker Name="EndDatePicker" Text="{Binding Path=EndDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource EndDateStyle}" SelectedDateChanged="UpdateDate" CalendarOpened="DatePicker_Open"></DatePicker>
         </DataTemplate>
 
         <!--<DataTemplate x:Name="customerViewModel" DataType="">
@@ -68,7 +65,7 @@
         <!--#endregion-->
     </Window.Resources>
     <Grid>
-        <DataGrid Name="OrderListGrid" CanUserResizeRows="True" CanUserDeleteRows="False" CanUserAddRows="False" CanUserReorderColumns="True" CanUserResizeColumns="True" CanUserSortColumns="True" HorizontalAlignment="Stretch" Height="auto" Margin="300,80,10,10" VerticalAlignment="Stretch" Width="auto" MinWidth="400" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <DataGrid x:Name="OrderListGrid" CanUserResizeRows="True" CanUserAddRows="False" CanUserReorderColumns="True" CanUserResizeColumns="True" CanUserSortColumns="True" HorizontalAlignment="Stretch" Height="auto" Margin="300,80,10,10" VerticalAlignment="Stretch" Width="auto" MinWidth="400" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 
         </DataGrid>
         <Grid Name="OrderStatusGrid" HorizontalAlignment="Stretch" Height="60" Margin="10,10,10,0" VerticalAlignment="Top">

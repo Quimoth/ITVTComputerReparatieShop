@@ -24,7 +24,7 @@ namespace ComputerReparatieShop
     /// </summary>
     public partial class CreatePartPage : Page
     {
-        MyContext db = new MyContext();
+        MyContext db = MyContext.Create();
         public CreatePartPage()
         {
             InitializeComponent();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputerReparatieShop.Models
 {
-    class UserModel
+    public class UserModel
     {
         //Possible/TODO add MIM
         public string FirstName { get; set; }

@@ -9,7 +9,7 @@ namespace ComputerReparatieShop.Migrations
 
     internal sealed class Configuration : DbMigrationsConfiguration<ComputerReparatieShop.DAL.MyContext>
     {
-        MyContext db = new MyContext();
+        MyContext db = MyContext.Create();
 
         public Configuration()
         {

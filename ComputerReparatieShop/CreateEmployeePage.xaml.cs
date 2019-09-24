@@ -22,7 +22,7 @@ namespace ComputerReparatieShop
     /// </summary>
     public partial class CreateEmployeePage : Page
     {
-        MyContext db = new MyContext();
+        MyContext db = MyContext.Create();
         public CreateEmployeePage()
         {
             InitializeComponent();

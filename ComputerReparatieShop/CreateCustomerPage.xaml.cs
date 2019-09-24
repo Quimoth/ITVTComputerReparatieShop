@@ -24,7 +24,7 @@ namespace ComputerReparatieShop
     /// </summary>
     public partial class CreateCustomerPage : Page
     {
-        MyContext db = new MyContext();
+        MyContext db = MyContext.Create();
         public CreateCustomerPage()
         {
             InitializeComponent();
@@ -55,10 +55,13 @@ namespace ComputerReparatieShop
                 if (string.IsNullOrEmpty(textBox.Text))
                 {
                     //Preposition isn't required
-                    if(field != "Preposition")
+                    if (field != "Preposition")
                     {
                         requiredFilled = false;
-                        label.Content += "*";
+                        if (!label.Content.ToString().Contains('*'))
+                        { 
+                            label.Content += "*";
+                        }
                         label.Foreground = Brushes.Red;
                     }
                 }
@@ -119,6 +122,7 @@ namespace ComputerReparatieShop
                 textBox.SelectionStart = selectionStart;
             }
 
+            
         }
     }
 }

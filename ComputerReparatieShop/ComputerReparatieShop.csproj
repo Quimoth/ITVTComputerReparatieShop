@@ -89,6 +89,7 @@
     <Compile Include="CreateRepairOrderPage.xaml.cs">
       <DependentUpon>CreateRepairOrderPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DAL\Data.cs" />
     <Compile Include="DAL\MyContext.cs" />
     <Compile Include="IsEqualOrGreaterThanConverter.cs" />
     <Compile Include="Migrations\201909190824297_initial.cs" />
@@ -187,15 +188,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Data\ComputerRepairShopDatabase.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\ComputerRepairShopDatabase_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>ComputerRepairShopDatabase.mdf</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

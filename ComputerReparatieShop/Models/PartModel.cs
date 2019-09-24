@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ComputerReparatieShop.Models
 {
-    class PartModel
+    public class PartModel
     {
         [Key]
         public int PartId { get; set; }
