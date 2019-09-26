@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ComputerReparatieShop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="auto" Width="auto">
     <Window.Resources>
         <local:IsEqualOrGreaterThanConverter x:Key="IsEqualOrGreaterThanConverter" />
         <!--#region Styles-->
-        <Style x:Key="StatusBlockStyle" TargetType="TextBlock">
+        <Style x:Key="StatusBlockStyle" TargetType="DataGridCell">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=Status}" Value="Waiting for Parts">
                     <Setter Property="Background" Value="SandyBrown"></Setter>
@@ -20,7 +20,7 @@
                 <DataTrigger Binding="{Binding Path=Status}" Value="Fixed">
                     <Setter Property="Background" Value="LightGreen"></Setter>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Path=Status}" Value="Waiting for Employee">
+                <DataTrigger Binding="{Binding Path=Status}" Value="Waiting for employee">
                     <Setter Property="Background" Value="LightCoral"></Setter>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=Status}" Value="In progress">

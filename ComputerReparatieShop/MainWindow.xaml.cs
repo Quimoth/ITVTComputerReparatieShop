@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -48,39 +49,10 @@ namespace ComputerReparatieShop
             //Handles the binding and styles of the cells in the orderlist.
             FillOrderList(repairs);
 
-            OrderListGrid.CellEditEnding += UpdateEntry;
             data.PropertyChanged += Refresh;
         }
 
-        private void UpdateEntry(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            RepairOrderModel editRepair = e.Row.DataContext as RepairOrderModel;
-            RepairOrderModel repairToEdit = db.Repairs.Where(x => x.RepairOrderId == editRepair.RepairOrderId).SingleOrDefault();
-
-            switch (e.Column.DisplayIndex)
-            {
-                case 0:
-                    repairToEdit.Customer = editRepair.Customer;
-                    break;
-            }
-            
-            db.Entry(repairToEdit).State = EntityState.Modified;
-            db.SaveChanges();
-        }
-
-        private void Refresh(object sender, PropertyChangedEventArgs e)
-        {
-            Update();
-        }
-
-        private void Update()
-        {
-            ObservableCollection<RepairOrderModel> repairs = data.Repairs;
-            OrderListGrid.Items.Refresh();
-            OrderListGrid.ItemsSource = repairs;
-            UpdateStatusBar(repairs);
-        }
-
+        #region DataGrid Initialization
         /// <summary>
         /// Binds the repair order data to the datagrid in the app and handles which columns are shown/hidden and adds the visual styles and templates.
         /// </summary>
@@ -92,12 +64,10 @@ namespace ComputerReparatieShop
             //The list of collumns we wish to display. The order in this list will be the column order the user sees.
             string[] columns = { "Customer", "Status", "Employee", "StartDate", "EndDate", "HoursWorked", "Description" };
 
-            //TODO: parts used and total cost column? latter will need special binding
+            //TODO: parts used and total cost column?
             foreach (string columnName in columns)
             {
-                DataGridTextColumn dataGridColumn = new DataGridTextColumn();
-
-                // Date columns
+                // Start and End Date Columns
                 if (columnName.Contains("Date"))
                 {
                     Binding binding = new Binding(columnName);
@@ -113,7 +83,7 @@ namespace ComputerReparatieShop
                     {
                         object obj = TryFindResource($"{type}DateTemplate");
                         template = obj as DataTemplate;
-                        
+
                         DatePicker datePicker = template.LoadContent() as DatePicker;
 
                         object temp = TryFindResource($"{type}DateStyle");
@@ -124,93 +94,113 @@ namespace ComputerReparatieShop
                         datePicker.BlackoutDates.Add(new CalendarDateRange(DateTime.MinValue, DateTime.Now));
                     }
 
-                    DataGridTemplateColumn dataGridTemplateColumn = new DataGridTemplateColumn
+                    OrderListGrid.Columns.Add(new DataGridTemplateColumn
                     {
                         Header = columnName,
                         CanUserSort = true,
                         SortMemberPath = $"{type}Date",
                         CellTemplate = template,
-                    };
-                    OrderListGrid.Columns.Add(dataGridTemplateColumn);
-                    continue;
+                    });
                 }
                 else if (columnName == "Status")
                 {
                     Binding binding = new Binding(columnName);
 
-                    DataTemplate template = new DataTemplate();
+                    Style style = TryFindResource("StatusBlockStyle") as Style;
+                    Style addEvent = new Style(typeof(ComboBox));
+                    addEvent.Setters.Add(new EventSetter(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler(EditStatus)));
 
-                    template = TryFindResource("StatusTemplate") as DataTemplate;
-                        
-                    TextBlock textBlock = template.LoadContent() as TextBlock;
-
-                    object temp = TryFindResource("StatusBlockStyle");
-
-                    //The styles handle the colors.
-                    textBlock.Style = temp as Style;
-
-                    DataGridTemplateColumn dataGridTemplateColumn = new DataGridTemplateColumn
+                    OrderListGrid.Columns.Add(new DataGridComboBoxColumn
                     {
                         Header = columnName,
-                        CellTemplate = template,
-                    };
-
-                    OrderListGrid.Columns.Add(dataGridTemplateColumn);
-                    continue;
+                        ItemsSource = status,
+                        SelectedItemBinding = binding,
+                        SelectedValueBinding = binding,
+                        EditingElementStyle = addEvent,
+                        CellStyle = style,
+                    });
                 }
-                else if(columnName == "Employee")
+                else if (columnName == "Employee")
                 {
                     Binding binding = new Binding(columnName);
+                    Style addEvent = new Style(typeof(ComboBox));
+                    addEvent.Setters.Add(new EventSetter(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler(EditEmployee)));
 
-                    DataGridComboBoxColumn dataGridComboBoxColumn = new DataGridComboBoxColumn
+                    OrderListGrid.Columns.Add(new DataGridComboBoxColumn
                     {
                         Header = columnName,
                         ItemsSource = data.Employees,
                         SelectedItemBinding = binding,
-                    };
-
-                    Style addEvent = new Style(typeof(ComboBox));
-                    addEvent.Setters.Add(new EventSetter(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler(EditEmployee)));
-
-                    dataGridComboBoxColumn.EditingElementStyle = addEvent;
-
-                    OrderListGrid.Columns.Add(dataGridComboBoxColumn);
-                    continue;
+                        SelectedValueBinding = binding,
+                        EditingElementStyle = addEvent,
+                    });
                 }
-                else if(columnName == "Customer")
+                else if (columnName == "Customer")
                 {
                     Binding binding = new Binding(columnName);
 
-                    DataGridComboBoxColumn dataGridComboBoxColumn = new DataGridComboBoxColumn
+                    Style addEvent = new Style(typeof(ComboBox));
+                    addEvent.Setters.Add(new EventSetter(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler(EditCustomer)));
+
+                    OrderListGrid.Columns.Add(new DataGridComboBoxColumn
                     {
                         Header = columnName,
                         ItemsSource = data.Customers,
                         SelectedItemBinding = binding,
                         SelectedValueBinding = binding,
-                    };
+                        EditingElementStyle = addEvent,
+                    });
+                }
+                else if (columnName == "HoursWorked")
+                {
+                    Binding binding = new Binding(columnName);
 
-                    Style addEvent = new Style(typeof(ComboBox));
-                    addEvent.Setters.Add(new EventSetter(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler(EditCustomer)));
+                    Style addEvent = new Style(typeof(TextBox));
+                    addEvent.Setters.Add(new EventSetter(TextBox.PreviewTextInputEvent, new TextCompositionEventHandler(IntegerValidation)));
 
-                    dataGridComboBoxColumn.EditingElementStyle = addEvent;
+                    OrderListGrid.Columns.Add(new DataGridTextColumn
+                    {
+                        Header = columnName,
+                        Binding = binding,
+                        EditingElementStyle = addEvent,
+                    });
+                }
+                else if (columnName == "Description")
+                {
+                    Binding binding = new Binding(columnName);
 
-                    OrderListGrid.Columns.Add(dataGridComboBoxColumn);
-                    continue;
+                    Style addEvent = new Style(typeof(DataGridCell));
+
+                    addEvent.Setters.Add(new EventSetter(DataGridCell.LostKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(DescriptionChanged)));
+
+                    OrderListGrid.Columns.Add(new DataGridTextColumn
+                    {
+                        Header = columnName,
+                        Binding = binding,
+                        CellStyle = addEvent,
+                    });
                 }
                 else
                 {
-                    dataGridColumn = new DataGridTextColumn
+                    OrderListGrid.Columns.Add(new DataGridTextColumn
                     {
                         Header = columnName,
                         Binding = new Binding(columnName),
-                    };
+                    });
                 }
-
-
-                OrderListGrid.Columns.Add(dataGridColumn);
             }
         }
 
+        #endregion
+
+        #region DataGrid edit and validation
+
+        #region ComboBox Events
+        /// <summary>
+        /// Eventhandler for changes of the employee of a repair (ComboBox)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditEmployee(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
@@ -221,7 +211,11 @@ namespace ComputerReparatieShop
             db.Entry(repair).State = EntityState.Modified;
             db.SaveChanges();
         }
-
+        /// <summary>
+        /// Eventhandler for changes of the customer of a repair (ComboBox)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditCustomer(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
@@ -232,6 +226,149 @@ namespace ComputerReparatieShop
             db.Entry(repair).State = EntityState.Modified;
             db.SaveChanges();
         }
+        /// <summary>
+        /// Eventhandler for changes of the status of a repair (ComboBox)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EditStatus(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            RepairOrderModel repair = comboBox.DataContext as RepairOrderModel;
+
+            repair.Status = comboBox.SelectedItem as string;
+
+            db.Entry(repair).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Updates the description if it has been changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DescriptionChanged(object sender, RoutedEventArgs e)
+        {
+            DataGridCell cell = sender as DataGridCell;
+
+            TextBox textBox = cell.Content as TextBox;
+
+            if (textBox != null)
+            {
+                RepairOrderModel repair = cell.DataContext as RepairOrderModel;
+                repair.Description = textBox.Text;
+
+                db.Entry(repair).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+        #endregion
+
+        #region DatePicker eventhandlers
+        /// <summary>
+        /// Adds blackout dates to the calendar object of the datepicker.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DatePicker_Open(object sender, RoutedEventArgs e)
+        {
+            DatePicker datePicker = sender as DatePicker;
+            RepairOrderModel repair = datePicker.DataContext as RepairOrderModel;
+            //Makes sure the start date can't be changed to anything earlier than now or the last start date.
+            DateTime currentStartDate = ((DateTime)repair.StartDate).AddDays(-1);
+            DateTime maxTime = (currentStartDate > DateTime.Now.AddDays(-1)) ? DateTime.Now.AddDays(-1) : currentStartDate;
+            datePicker.BlackoutDates.Add(new CalendarDateRange(DateTime.MinValue, maxTime));
+            if (datePicker.Name.Contains("End"))
+            {
+                datePicker.BlackoutDates.AddDatesInPast();
+            }
+        }
+
+        /// <summary>
+        /// Updates the date the use has changed and saves it on the database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateDate(object sender, SelectionChangedEventArgs e)
+        {
+            DatePicker datePicker = sender as DatePicker;
+            if (datePicker.IsDropDownOpen)
+            {
+                RepairOrderModel order = datePicker.DataContext as RepairOrderModel;
+
+                DateTime? orderStart = order.StartDate;
+                DateTime? today = DateTime.Now;
+                DateTime? selected = datePicker.SelectedDate;
+
+                string name = datePicker.Name;
+                datePicker.IsDropDownOpen = false;
+
+                if (name.Contains("End"))
+                {
+                    if (selected > orderStart && selected > today)
+                    {
+                        order.EndDate = selected;
+                        db.Entry(order).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        Update();
+                    }
+                }
+                else
+                {
+                    if (selected > today)
+                    {
+                        order.StartDate = selected;
+                        db.Entry(order).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        Update();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region TextBox Validation
+
+        /// <summary>
+        /// Prevents false input from being typed into name fields and automatically adds a Capital letter at the begin.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Name_Text_Changed(object sender, TextChangedEventArgs e)
+        {
+            string changes = e.Changes.ToString();
+
+            TextBox textBox = sender as TextBox;
+            string text = textBox.Text;
+
+            char capital = text[0];
+            capital = (capital > 96) ? (char)(capital - 32) : capital;
+            text = text.Remove(0, 1);
+            textBox.Text = text.Insert(0, $"{capital}");
+        }
+
+        private void IntegerValidation(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsInt(e.Text);
+        }
+        #endregion
+
+        #region helper methods
+        /// <summary>
+        /// returns wether a given string is an Integer (of any size)
+        /// </summary>
+        /// <param name="text">the string to parse</param>
+        /// <returns></returns>
+        private bool IsInt(string text)
+        {
+            Regex regex = new Regex("[0-9]");
+            return regex.IsMatch(text);
+        }
+        #endregion
+        #endregion
 
         #region StatusBar
         /// <summary>
@@ -257,7 +394,7 @@ namespace ComputerReparatieShop
                 Grid.SetRow(headerLabel, 0);
                 Grid.SetColumn(headerLabel, col);
 
-                
+
 
                 List<RepairOrderModel> repairsOfType = repairs.Where(x => x.Status == s).ToList();
 
@@ -277,7 +414,10 @@ namespace ComputerReparatieShop
         }
         #endregion
 
-        #region Buttons
+        #region Create Buttons
+        /* 
+         * These buttons open the different create pages in the frame object of the main window grid.
+         */
         private void Add_Customer(object sender, RoutedEventArgs e)
         {
             CreateFrame.Source = new Uri("CreateCustomerPage.xaml", UriKind.RelativeOrAbsolute);
@@ -299,83 +439,27 @@ namespace ComputerReparatieShop
         }
         #endregion
 
-        #region DatePicker eventhandlers
-        private void DatePicker_Open(object sender, RoutedEventArgs e)
-        {
-            DatePicker datePicker = sender as DatePicker;
-            RepairOrderModel repair = datePicker.DataContext as RepairOrderModel;
-            //Makes sure the start date can't be changed to anything earlier than now or the last start date.
-            DateTime currentStartDate = ((DateTime)repair.StartDate).AddDays(-1);
-            DateTime maxTime = (currentStartDate > DateTime.Now.AddDays(-1)) ? DateTime.Now.AddDays(-1) : currentStartDate;
-            datePicker.BlackoutDates.Add(new CalendarDateRange(DateTime.MinValue, maxTime));
-            if (datePicker.Name.Contains("End"))
-            {
-                datePicker.BlackoutDates.AddDatesInPast();
-            }
-        }
-
-        private void UpdateDate(object sender, SelectionChangedEventArgs e)
-        {
-            DatePicker datePicker = sender as DatePicker;
-            if (datePicker.IsDropDownOpen)
-            {
-                RepairOrderModel selectedOrder = datePicker.DataContext as RepairOrderModel;
-                RepairOrderModel order = db.Repairs.Where(x => x.RepairOrderId == selectedOrder.RepairOrderId).SingleOrDefault();
-
-                DateTime? orderStart = order.StartDate;
-                DateTime? today = DateTime.Now;
-                DateTime? selected = datePicker.SelectedDate;
-
-                string name = datePicker.Name;
-                datePicker.IsDropDownOpen = false;
-
-                if (name.Contains("End"))
-                {
-                    if (selected > orderStart && selected > today)
-                    {
-                        order.EndDate = selected;
-                        db.Entry(order).State = EntityState.Modified;
-                        db.SaveChanges();
-
-                        Update();
-                    }
-                }
-                else
-                {
-                    if(selected > today)
-                    {
-                        order.StartDate = selected;
-                        db.Entry(order).State = EntityState.Modified;
-                        db.SaveChanges();
-
-                        Update();
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region Validation
-
+        #region update/refresh methods
         /// <summary>
-        /// Prevents false input from being typed into name fields and automatically adds a Capital letter at the begin.
+        /// Calls the Update() method.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void Name_Text_Changed(object sender, TextChangedEventArgs e)
+        private void Refresh(object sender, PropertyChangedEventArgs e)
         {
-            string changes = e.Changes.ToString();
-
-            TextBox textBox = sender as TextBox;
-            string text = textBox.Text;
-
-            char capital = text[0];
-            capital = (capital > 96) ? (char)(capital - 32) : capital;
-            text = text.Remove(0, 1);
-            textBox.Text = text.Insert(0, $"{capital}");
+            Update();
         }
 
+        /// <summary>
+        /// Updates the DataGrid on the front end when a change has been made.
+        /// </summary>
+        private void Update()
+        {
+            ObservableCollection<RepairOrderModel> repairs = data.Repairs;
+            OrderListGrid.Items.Refresh();
+            OrderListGrid.ItemsSource = repairs;
+            UpdateStatusBar(repairs);
+        }
         #endregion
     }
 }

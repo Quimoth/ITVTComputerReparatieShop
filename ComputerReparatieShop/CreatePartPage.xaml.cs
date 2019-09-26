@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -50,12 +51,37 @@ namespace ComputerReparatieShop
                 PartModel part = db.Parts.Where(x => x.Name == partName).FirstOrDefault();
                 if(part != null)
                 {
+                    ResultLabel.Foreground = Brushes.Red;
+                    ResultLabel.Content = "Dit onderdeel bestaat al!";
                     return;
                 }
 
                 db.Parts.Add(new PartModel { Name = partName, Price = price, Manufacturer = manufacturer });
                 db.SaveChanges();
+                ResultLabel.Foreground = Brushes.Black;
+                ResultLabel.Content = "Onderdeel toegevoegd";
             }
+            else
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// returns wether a given string is an Integer (of any size)
+        /// </summary>
+        /// <param name="text">the string to parse</param>
+        /// <returns></returns>
+        private bool IsDouble(string text)
+        {
+            Regex regex = new Regex("^\\d{0,6}(\\.\\d{0,1})?$");
+            return regex.IsMatch(text);
+        }
+
+        private void NumberValidation(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            e.Handled = !IsDouble(textBox.Text);
         }
     }
 }

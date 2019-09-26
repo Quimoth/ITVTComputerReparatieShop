@@ -59,7 +59,7 @@ namespace ComputerReparatieShop
                 {
                     SelectCustomerLabel.Content += "*";
                 }
-                ErrorLabel.Visibility = Visibility.Visible;
+                Required();
                 noNulls = false;
             }
             if (startDate == null)
@@ -67,9 +67,9 @@ namespace ComputerReparatieShop
                 SelectStartDateLabel.Foreground = Brushes.Red;
                 if (!SelectStartDateLabel.Content.ToString().Contains('*'))
                 {
-                    SelectStartDateLabel.Content += " *";
+                    SelectStartDateLabel.Content += "*";
                 }
-                ErrorLabel.Visibility = Visibility.Visible;
+                Required();
                 noNulls = false;
             }
             if (endDate == null)
@@ -77,9 +77,9 @@ namespace ComputerReparatieShop
                 SelectEndDateLabel.Foreground = Brushes.Red;
                 if (!SelectEndDateLabel.Content.ToString().Contains('*'))
                 {
-                    SelectEndDateLabel.Content += " *";
+                    SelectEndDateLabel.Content += "*";
                 }
-                ErrorLabel.Visibility = Visibility.Visible;
+                Required();
                 noNulls = false;
             }
             #endregion
@@ -100,17 +100,64 @@ namespace ComputerReparatieShop
                 db.Repairs.Add(repair);
                 db.SaveChanges();
                 data.Repairs = new ObservableCollection<RepairOrderModel>(data.Repairs.Append(repair));
+                CustomerBox.SelectedItem = null;
+                EmployeeBox.SelectedItem = null;
+                StartDateBox.SelectedDate = null;
+                EndDateBox.SelectedDate = null;
+                ResultLabel.Visibility = Visibility.Visible;
+                ResultLabel.Foreground = Brushes.Green;
+                ResultLabel.Content = "Repair added";
             }
+        }
+
+        private void Required()
+        {
+            ResultLabel.Content = "* = required";
+            ResultLabel.Foreground = Brushes.Red;
+            ResultLabel.Visibility = Visibility.Visible;
         }
 
         private void StartDateBox_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            DateTime selectedDate = (DateTime)StartDateBox.SelectedDate;
-            EndDateBox.BlackoutDates.Clear();
-            EndDateBox.BlackoutDates.AddDatesInPast();
-            EndDateBox.BlackoutDates.Add(new CalendarDateRange(DateTime.Now, selectedDate));
-            EndDateBox.SelectedDate = null;
+            if(!(StartDateBox.SelectedDate == null))
+            {
+                DateTime selectedDate = (DateTime)StartDateBox.SelectedDate;
+                EndDateBox.BlackoutDates.Clear();
+                EndDateBox.BlackoutDates.AddDatesInPast();
+                EndDateBox.BlackoutDates.Add(new CalendarDateRange(DateTime.Now, selectedDate));
+                EndDateBox.SelectedDate = null;
+                SelectStartDateLabel.Foreground = Brushes.Black;
+                SelectStartDateLabel.Content = "Start date:";
+            }
+
         }
 
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            string name = comboBox.Name.Remove(comboBox.Name.Length - 3);
+
+            switch (name)
+            {
+                case "Customer":
+                    SelectCustomerLabel.Content = $"{name}:";
+                    SelectCustomerLabel.Foreground = Brushes.Black;  
+                    break;
+                case "Employee":
+                    SelectEmployeeLabel.Content = $"{name}:";
+                    SelectEmployeeLabel.Foreground = Brushes.Black;
+                    break;
+            }
+        }
+
+        private void EndDateBox_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(EndDateBox.SelectedDate == null))
+            {
+                SelectEndDateLabel.Foreground = Brushes.Black;
+                SelectEndDateLabel.Content = "End date:";
+            }
+            
+        }
     }
 }

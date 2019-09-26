@@ -27,19 +27,19 @@
         
         <!--#region UserInputFields-->
         <Label Name="SelectCustomerLabel" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MinHeight="25" Content="Customer:" Margin="2,2,2,2"></Label>
-        <ListBox ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Name="CustomerBox" Margin="2,2,2,2" MinHeight="25" Height="auto" MaxHeight="200" MinWidth="60" Width="102"></ListBox>
+        <ComboBox Text="Select a Customer" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Name="CustomerBox" Margin="2,2,2,2" MinHeight="25" Height="auto" MaxHeight="200" MinWidth="60" Width="102" SelectionChanged="ComboBox_SelectionChanged"></ComboBox>
         
         <Label Name="SelectStartDateLabel" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MinHeight="25" Content="Start date:" Margin="2,2,2,2"></Label>
-        <DatePicker VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Name="StartDateBox" Margin="2,2,2,2" MinHeight="25" MinWidth="60" SelectedDateChanged="StartDateBox_SelectedDateChanged"></DatePicker>
+        <DatePicker VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Name="StartDateBox" Margin="2,2,2,2" MinHeight="25" MinWidth="60" Width="auto" SelectedDateChanged="StartDateBox_SelectedDateChanged"></DatePicker>
         
         <Label Name="SelectEndDateLabel" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="3" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MinHeight="25" Content="End date:" Margin="2,2,2,2"></Label>
-        <DatePicker VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Name="EndDateBox" Margin="2,2,2,2" MinHeight="25" MinWidth="60"></DatePicker>
+        <DatePicker VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Name="EndDateBox" Margin="2,2,2,2" MinHeight="25" MinWidth="60" Width="auto" SelectedDateChanged="EndDateBox_SelectedDateChanged"></DatePicker>
         
         <Label Name="SelectEmployeeLabel" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="4" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MinHeight="25" Content="Employee:" Margin="2,2,2,2"></Label>
-        <ListBox ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" Name="EmployeeBox" Margin="2,2,2,2" MinHeight="25" MinWidth="60" Width="102" Height="auto" MaxHeight="200"></ListBox>
+        <ComboBox Text="Select an Employee" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" Name="EmployeeBox" Margin="2,2,2,2" MinHeight="25" MinWidth="60" Width="102" Height="auto" MaxHeight="200" SelectionChanged="ComboBox_SelectionChanged"></ComboBox>
         <!--#endregion-->
         
-        <Label Name="ErrorLabel" Foreground="Red" Visibility="Collapsed" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MinHeight="25" Content="" Margin="2,2,2,2"></Label>
+        <Label Name="ResultLabel" Foreground="Red" Visibility="Collapsed" HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MinHeight="25" Content="" Margin="2,2,2,2"></Label>
         <Button Name="CreateRepairOrderButton" Content="Add order" Grid.Column="2" Grid.Row="5" Width="75" HorizontalAlignment="Left" Click="CreateRepairOrderButton_Click"/>
     </Grid>
 </Page>
