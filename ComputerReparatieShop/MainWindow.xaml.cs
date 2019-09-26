@@ -29,8 +29,8 @@ namespace ComputerReparatieShop
     public partial class MainWindow : Window
     {
         #region Variables
-        List<string> status = new List<string> { "Waiting for Parts", "In progress", "Inactive", "Fixed", "Waiting for employee" };
-        List<Brush> statusColors = new List<Brush> { Brushes.SandyBrown, Brushes.NavajoWhite, Brushes.LightGray, Brushes.LightGreen, Brushes.LightCoral };
+        readonly List<string> status = new List<string> { "Waiting for Parts", "In progress", "Inactive", "Fixed", "Waiting for employee" };
+        readonly List<Brush> statusColors = new List<Brush> { Brushes.SandyBrown, Brushes.NavajoWhite, Brushes.LightGray, Brushes.LightGreen, Brushes.LightCoral };
 
         public static Data data = new Data();
 
@@ -180,6 +180,7 @@ namespace ComputerReparatieShop
                         CellStyle = addEvent,
                     });
                 }
+                //The default column, simply binds the text to a datagridtextcolumn, redundant.
                 else
                 {
                     OrderListGrid.Columns.Add(new DataGridTextColumn
@@ -211,6 +212,7 @@ namespace ComputerReparatieShop
             db.Entry(repair).State = EntityState.Modified;
             db.SaveChanges();
         }
+
         /// <summary>
         /// Eventhandler for changes of the customer of a repair (ComboBox)
         /// </summary>
@@ -226,6 +228,7 @@ namespace ComputerReparatieShop
             db.Entry(repair).State = EntityState.Modified;
             db.SaveChanges();
         }
+
         /// <summary>
         /// Eventhandler for changes of the status of a repair (ComboBox)
         /// </summary>
@@ -235,11 +238,27 @@ namespace ComputerReparatieShop
         {
             ComboBox comboBox = sender as ComboBox;
             RepairOrderModel repair = comboBox.DataContext as RepairOrderModel;
+            string selectedStatus = (string)comboBox.SelectedItem;
+            List<string> allowedStatus = new List<string>(status);
 
-            repair.Status = comboBox.SelectedItem as string;
+            if(repair.Employee == null)
+            {
+                allowedStatus.Remove("In progress");
+            }
+            else
+            {
+                allowedStatus.Remove("Inactive");
+                allowedStatus.Remove("Waiting for employee");
+            }
 
-            db.Entry(repair).State = EntityState.Modified;
-            db.SaveChanges();
+            if (allowedStatus.Contains(selectedStatus) && repair.Status != selectedStatus)
+            {
+                repair.Status = selectedStatus;
+
+                db.Entry(repair).State = EntityState.Modified;
+                db.SaveChanges();
+                Update();
+            }
         }
 
         /// <summary>
@@ -368,6 +387,7 @@ namespace ComputerReparatieShop
             return regex.IsMatch(text);
         }
         #endregion
+
         #endregion
 
         #region StatusBar
