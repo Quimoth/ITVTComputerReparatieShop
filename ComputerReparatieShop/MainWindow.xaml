@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ComputerReparatieShop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="auto" Width="auto">
+        Title="MainWindow" 
+        Height="auto" 
+        Width="auto" 
+        WindowState="Maximized">
     <Window.Resources>
         <local:IsEqualOrGreaterThanConverter x:Key="IsEqualOrGreaterThanConverter" />
         <!--#region Styles-->
@@ -32,7 +35,7 @@
         <Style x:Key="StartDateStyle" TargetType="DatePicker">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=StartDate, Converter={StaticResource IsEqualOrGreaterThanConverter}, ConverterParameter=3}" Value="True">
-                    <Setter Property="Background" Value="NavajoWhite" />
+                    <Setter Property="Background" Value="Orange"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -40,7 +43,7 @@
         <Style x:Key="EndDateStyle" TargetType="DatePicker">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=EndDate, Converter={StaticResource IsEqualOrGreaterThanConverter}, ConverterParameter=3}" Value="True">
-                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="Background" Value="Red"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -59,13 +62,19 @@
             <DatePicker Name="EndDatePicker" Text="{Binding Path=EndDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource EndDateStyle}" SelectedDateChanged="UpdateDate" CalendarOpened="DatePicker_Open"></DatePicker>
         </DataTemplate>
 
+        <DataTemplate x:Name="PartsUsedTemplate" x:Key="PartsUsedTemplate">
+            <ListBox ItemsSource="{Binding Path=PartsUsed}" MaxHeight="100" ScrollViewer.CanContentScroll="True" MouseLeftButtonDown="AddPart"/>
+        </DataTemplate>
+
+
+
         <!--<DataTemplate x:Name="customerViewModel" DataType="">
             
         </DataTemplate>-->
         <!--#endregion-->
     </Window.Resources>
     <Grid>
-        <DataGrid x:Name="OrderListGrid" CanUserResizeRows="True" CanUserAddRows="False" CanUserReorderColumns="True" CanUserResizeColumns="True" CanUserSortColumns="True" HorizontalAlignment="Stretch" Height="auto" Margin="300,80,10,10" VerticalAlignment="Stretch" Width="auto" MinWidth="400" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <DataGrid x:Name="OrderListGrid" CanUserResizeRows="True" CanUserAddRows="False" CanUserReorderColumns="True" CanUserResizeColumns="True" CanUserSortColumns="True" HorizontalAlignment="Stretch" Height="auto" Margin="300,80,10,10" VerticalAlignment="Stretch" Width="auto" MinWidth="500" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 
         </DataGrid>
         <Grid Name="OrderStatusGrid" HorizontalAlignment="Stretch" Height="60" Margin="10,10,10,0" VerticalAlignment="Top">

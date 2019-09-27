@@ -1,0 +1,22 @@
+﻿<Window x:Class="ComputerReparatieShop.AddPartsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComputerReparatieShop"
+        mc:Ignorable="d"
+        Title="AddPartsWindow" Height="450" Width="800">
+    <Grid>
+
+        <Grid Name="RepairInfoGrid" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Margin="10,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30*" MinWidth="60"/>
+                <ColumnDefinition Width="30*" MinWidth="60"/>
+                <ColumnDefinition Width="136*"/>
+            </Grid.ColumnDefinitions>
+            <ItemsControl Name="RepairItemsControl" Grid.Column="1" Background="WhiteSmoke" Height="auto" Width="auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Top"/>
+            <ItemsControl Name="LabelItemsControl" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Top"/>
+            <DataGrid Name="PartsItemsControl" IsReadOnly="True" Grid.Column="2" AutoGenerateColumns="False"/>
+        </Grid>
+    </Grid>
+</Window>

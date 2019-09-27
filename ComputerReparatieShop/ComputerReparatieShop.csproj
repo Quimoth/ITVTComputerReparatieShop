@@ -77,6 +77,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddPartsWindow.xaml.cs">
+      <DependentUpon>AddPartsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CreateCustomerPage.xaml.cs">
       <DependentUpon>CreateCustomerPage.xaml</DependentUpon>
     </Compile>
@@ -116,6 +119,10 @@
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\PartModel.cs" />
     <Compile Include="Models\RepairOrderModel.cs" />
+    <Page Include="AddPartsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CreateCustomerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

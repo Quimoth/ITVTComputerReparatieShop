@@ -62,7 +62,7 @@ namespace ComputerReparatieShop
             OrderListGrid.AutoGenerateColumns = false;
 
             //The list of collumns we wish to display. The order in this list will be the column order the user sees.
-            string[] columns = { "Customer", "Status", "Employee", "StartDate", "EndDate", "HoursWorked", "Description" };
+            string[] columns = { "Customer", "Status", "Employee", "StartDate", "EndDate", "HoursWorked", "Description", "PartsUsed" };
 
             //TODO: parts used and total cost column?
             foreach (string columnName in columns)
@@ -138,7 +138,6 @@ namespace ComputerReparatieShop
                 else if (columnName == "Customer")
                 {
                     Binding binding = new Binding(columnName);
-
                     Style addEvent = new Style(typeof(ComboBox));
                     addEvent.Setters.Add(new EventSetter(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler(EditCustomer)));
 
@@ -169,8 +168,13 @@ namespace ComputerReparatieShop
                 {
                     Binding binding = new Binding(columnName);
 
-                    Style addEvent = new Style(typeof(DataGridCell));
+                    Style textwrapper = new Style(typeof(TextBox));
+                    textwrapper.Setters.Add(new Setter(TextBox.TextWrappingProperty, TextWrapping.Wrap));
+                    textwrapper.Setters.Add(new Setter(TextBox.MaxLengthProperty, 300));
+                    Style textwrappert = new Style(typeof(TextBlock));
+                    textwrappert.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
 
+                    Style addEvent = new Style(typeof(DataGridCell));
                     addEvent.Setters.Add(new EventSetter(DataGridCell.LostKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(DescriptionChanged)));
 
                     OrderListGrid.Columns.Add(new DataGridTextColumn
@@ -178,6 +182,23 @@ namespace ComputerReparatieShop
                         Header = columnName,
                         Binding = binding,
                         CellStyle = addEvent,
+                        MaxWidth = 400,
+                        EditingElementStyle = textwrapper,
+                        ElementStyle = textwrappert,
+                    });
+                }
+                else if (columnName == "PartsUsed")
+                {
+                    Binding binding = new Binding(columnName);
+
+                    DataTemplate dataTemplate = TryFindResource($"{columnName}Template") as DataTemplate;
+                    ListBox listBox = dataTemplate.LoadContent() as ListBox;
+
+                    OrderListGrid.Columns.Add(new DataGridTemplateColumn
+                    {
+                        Header = columnName,
+                        CanUserSort = false,
+                        CellTemplate = dataTemplate,
                     });
                 }
                 //The default column, simply binds the text to a datagridtextcolumn, redundant.
@@ -190,6 +211,17 @@ namespace ComputerReparatieShop
                     });
                 }
             }
+        }
+
+        private void AddPart(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = false;
+            ListBox listBox = sender as ListBox;
+            RepairOrderModel repair = listBox.DataContext as RepairOrderModel;
+
+            AddPartsWindow addPartsWindow = new AddPartsWindow(repair);
+            addPartsWindow.ShowDialog();
+
         }
 
         #endregion
@@ -241,7 +273,7 @@ namespace ComputerReparatieShop
             string selectedStatus = (string)comboBox.SelectedItem;
             List<string> allowedStatus = new List<string>(status);
 
-            if(repair.Employee == null)
+            if (repair.Employee == null)
             {
                 allowedStatus.Remove("In progress");
             }

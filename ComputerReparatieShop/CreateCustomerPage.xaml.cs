@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -91,38 +92,36 @@ namespace ComputerReparatieShop
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void Name_Text_Changed(object sender, TextChangedEventArgs e)
-        {
-            //char[] nums = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
-            //var changes = e.Changes.ToList();
+        {     
             TextBox textBox = sender as TextBox;
             string text = textBox.Text;
 
-            //foreach (TextChange textChange in changes)
-            //{
-            //    int changeStart = textChange.Offset;
-            //    int addedLength = textChange.AddedLength;
-
-            //    if(addedLength > 0)
-            //    {
-            //        if(text.Substring(changeStart, addedLength).Any(c => nums.Contains(c)))
-            //        {
-                        
-            //        }
-            //    }
-            //}
-
             if (!string.IsNullOrEmpty(text))
             {
+                text = text.ToLower();
                 char capital = text[0];
-                capital = (capital > 96) ? (char)((int)capital - 32) : capital;
+                capital -= (char)32;
                 text = text.Remove(0, 1);
                 text = text.Insert(0, $"{capital}");
                 int selectionStart = textBox.SelectionStart;
                 textBox.Text = text;
                 textBox.SelectionStart = selectionStart;
             }
+        }
 
-            
+        private void NameBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[a-zA-Z]");
+
+            e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private void NameBox_PreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if(e.Command == ApplicationCommands.Cut || e.Command == ApplicationCommands.Paste || e.Command == ApplicationCommands.Copy)
+            {
+                e.Handled = true;
+            }
         }
     }
 }
