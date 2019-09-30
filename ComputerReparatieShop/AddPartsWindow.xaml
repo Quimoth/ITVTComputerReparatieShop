@@ -8,7 +8,7 @@
         Title="AddPartsWindow" Height="450" Width="800">
     <Grid>
 
-        <Grid Name="RepairInfoGrid" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Margin="10,10,0,0">
+        <Grid Name="RepairInfoGrid" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30*" MinWidth="60"/>
                 <ColumnDefinition Width="30*" MinWidth="60"/>
@@ -16,7 +16,8 @@
             </Grid.ColumnDefinitions>
             <ItemsControl Name="RepairItemsControl" Grid.Column="1" Background="WhiteSmoke" Height="auto" Width="auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Top"/>
             <ItemsControl Name="LabelItemsControl" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Right" VerticalContentAlignment="Top"/>
-            <DataGrid Name="PartsItemsControl" IsReadOnly="True" Grid.Column="2" AutoGenerateColumns="False"/>
+            <Button Content="Add selected parts" Name="AddPartsButton" HorizontalAlignment="Stretch" Width="auto" Grid.Column="0" VerticalAlignment="Bottom" Margin="0,0,0,0" Click="AddPartsButton_Click"/>
+            <DataGrid Name="PartGrid" IsReadOnly="True" Grid.Column="2" AutoGenerateColumns="False"/>
         </Grid>
     </Grid>
 </Window>
