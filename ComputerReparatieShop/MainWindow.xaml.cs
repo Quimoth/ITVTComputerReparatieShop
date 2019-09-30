@@ -201,7 +201,7 @@ namespace ComputerReparatieShop
                         CellTemplate = dataTemplate,
                     });
                 }
-                //The default column, simply binds the text to a datagridtextcolumn, redundant.
+                //The default column(s), simply binds the text to a datagridtextcolumn, redundant.
                 else
                 {
                     OrderListGrid.Columns.Add(new DataGridTextColumn
@@ -213,6 +213,11 @@ namespace ComputerReparatieShop
             }
         }
 
+        /// <summary>
+        /// Opens a dialog where the user can select parts from a list to add them to a repair. WIP
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddPart(object sender, MouseButtonEventArgs e)
         {
             e.Handled = false;
@@ -221,7 +226,6 @@ namespace ComputerReparatieShop
 
             AddPartsWindow addPartsWindow = new AddPartsWindow(repair);
             addPartsWindow.ShowDialog();
-
         }
 
         #endregion

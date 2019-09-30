@@ -63,7 +63,7 @@
         </DataTemplate>
 
         <DataTemplate x:Name="PartsUsedTemplate" x:Key="PartsUsedTemplate">
-            <ListBox ItemsSource="{Binding Path=PartsUsed}" MaxHeight="100" ScrollViewer.CanContentScroll="True" MouseLeftButtonDown="AddPart"/>
+            <ListBox ItemsSource="{Binding Path=PartsUsed}" MaxHeight="100" ToolTip="ChangeParts" ScrollViewer.CanContentScroll="True" MouseLeftButtonDown="AddPart"/>
         </DataTemplate>
 
 
